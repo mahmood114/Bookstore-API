@@ -13,52 +13,55 @@ exports.bookFetch = async (req, res) => {
     }
 };
 
-exports.bookDelete = (req, res) => {
-    const {bookId} = req.params;
-    const foundBook = books.find(book => book.id === +bookId);
+exports.bookCreate = async (req, res) => {
+    try {
+        const newProduct = await Product.create(req.body);
+        res.status(201).json(newProduct);
+
+    } catch (error) {
+        res.status(500).json({msg: error.message})
+    }
+    // const id = books.length + 1;
+    // const slug = slugify(req.body.name, {lower: true});
+    // const newBook = {id, slug, ...req.body};
+    // books.push(newBook);
+
+    // res.status(201).json(newBook);
+};
+
+exports.bookDelete = async (req, res) => {
     
-    if (foundBook) {
-        books = books.filter(book => book.id !== +bookId);
-        res.json({
-            message: `Book with ID ${bookId} was deleted successfully`
-        })
-        res.status(204).end();
-    }
-    else {
-        res.status(404);
-        res.json({
-            message: "No book with this ID was found!"
-        })
+    try {
+        const {bookId} = req.params;
+        const foundBook = await Product.findByPk(bookId)
+
+        if (foundBook) {
+            await foundBook.destroy();
+            res.status(204).end();
+        }
+        else {
+            res.status(404).json({msg: `The product with ID ${bookId} does not exist`});
+        }
+
+    } catch (error) {
+        res.status(500).json({msg: error.message})
     }
 };
 
-exports.bookCreate = (req, res) => {
-    const id = books.length + 1;
-    const slug = slugify(req.body.name, {lower: true});
-    const newBook = {id, slug, ...req.body};
-    books.push(newBook);
+exports.bookUpdate = async (req, res) => {
 
-    res.status(201).json(newBook);
-};
+    try {
+        const {bookId} = req.params;
+        const foundBook = await Product.findByPk(bookId);
 
-exports.bookUpdate = (req, res) => {
-    const {bookId} = req.params;
-    const foundBook = books.find(book => book.id === +bookId);
+        if (foundBook) {
+            foundBook.update(req.body);
+            res.status(204).end();
+        }
+        else res.status(404).json({msg: `The product with ID ${bookId} does not exist`});
 
-    if (foundBook) {
-
-        for (const key in req.body) foundBook[key] = req.body[key];
-        foundBook.slug = slugify(req.body.name, {lower: true});
-        res.json({
-            message: `Book with ID ${bookId} was successfully updated`
-        })
-
-        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({msg: error.message});
     }
-    else {
-        res.status(404);
-        res.json({
-            message: "No book with this ID was found!"
-        })
-    }
+
 }

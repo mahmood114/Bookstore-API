@@ -12,7 +12,7 @@ app.use("/books", bookRoutes);
 
 const run = async () => {
     try {
-        await db.sequelize.sync();
+        await db.sequelize.sync({alter: true});
         app.listen(8000);
     } catch (error) {
         console.log(error);
