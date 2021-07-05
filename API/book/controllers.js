@@ -1,8 +1,16 @@
 let books = require("../../data");
 const slugify = require("slugify");
+const {Product} = require("../../db/models");
 
-exports.bookFetch = (req, res) => {
-    res.json(books)
+exports.bookFetch = async (req, res) => {
+    try {
+        const books = await Product.findAll({
+            attributes: {exclude: ["createdAt", "updatedAt"]}
+        });
+        res.json(books)
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
 };
 
 exports.bookDelete = (req, res) => {
