@@ -1,67 +1,56 @@
-let books = require("../../data");
-const slugify = require("slugify");
-const {Product} = require("../../db/models");
+const { Product } = require("../../db/models");
 
-exports.bookFetch = async (req, res) => {
-    try {
-        const books = await Product.findAll({
-            attributes: {exclude: ["createdAt", "updatedAt"]}
-        });
-        res.json(books)
-    } catch (error) {
-        res.status(500).json(error.message);
-    }
+exports.fetchBook = async (bookId, next) => {
+  try {
+    const book = await Product.findByPk(bookId);
+    return book;
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.bookCreate = async (req, res) => {
-    try {
-        const newProduct = await Product.create(req.body);
-        res.status(201).json(newProduct);
-
-    } catch (error) {
-        res.status(500).json({msg: error.message})
-    }
-    // const id = books.length + 1;
-    // const slug = slugify(req.body.name, {lower: true});
-    // const newBook = {id, slug, ...req.body};
-    // books.push(newBook);
-
-    // res.status(201).json(newBook);
+exports.bookFetch = async (req, res, next) => {
+  try {
+    const books = await Product.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    res.json(books);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.bookDelete = async (req, res) => {
-    
-    try {
-        const {bookId} = req.params;
-        const foundBook = await Product.findByPk(bookId)
+exports.bookCreate = async (req, res, next) => {
+  try {
+    if (req.file) req.body.image = `http://${req.get("host")}/${req.file.path}`;
 
-        if (foundBook) {
-            await foundBook.destroy();
-            res.status(204).end();
-        }
-        else {
-            res.status(404).json({msg: `The product with ID ${bookId} does not exist`});
-        }
-
-    } catch (error) {
-        res.status(500).json({msg: error.message})
-    }
+    const newProduct = await Product.create(req.body);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.bookUpdate = async (req, res) => {
+exports.bookDelete = async (req, res, next) => {
+  try {
+    const foundBook = req.book;
 
-    try {
-        const {bookId} = req.params;
-        const foundBook = await Product.findByPk(bookId);
+    await foundBook.destroy();
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
 
-        if (foundBook) {
-            foundBook.update(req.body);
-            res.status(204).end();
-        }
-        else res.status(404).json({msg: `The product with ID ${bookId} does not exist`});
+exports.bookUpdate = async (req, res, next) => {
+  try {
+    if (req.file) req.body.image = `http://${req.get("host")}/${req.file.path}`;
 
-    } catch (error) {
-        res.status(500).json({msg: error.message});
-    }
+    const foundBook = req.book;
 
-}
+    await foundBook.update(req.body);
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
