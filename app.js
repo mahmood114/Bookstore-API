@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const bookRoutes = require("./API/book/routes");
-const db = require("./db/models");
+const shopRoutes = require("./API/shop/routes");
 
+const db = require("./db/models/index");
 const app = express();
 
 // Middleware
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // CRUD routes
 app.use("/books", bookRoutes);
+app.use("/shops", shopRoutes);
 app.use("/media", express.static("media"));
 
 // Error Middleware
@@ -22,9 +24,7 @@ app.use((err, req, res, next) => {
 
 // Path Not Found middleware
 app.use((req, res, next) => {
-  const error = new Error("Path Not Found");
-  error.status = 404;
-  next(error);
+  res.status(404).json({ message: "Path not found." });
 });
 
 const run = async () => {

@@ -34,8 +34,6 @@ const upload = multer({ storage });
 
 router.get("/", bookFetch);
 
-router.post("/", upload.single("image"), bookCreate);
-
 router.delete("/:bookId", bookDelete);
 
 router.put("/:bookId", upload.single("image"), bookUpdate);

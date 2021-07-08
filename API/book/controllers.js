@@ -20,17 +20,6 @@ exports.bookFetch = async (req, res, next) => {
   }
 };
 
-exports.bookCreate = async (req, res, next) => {
-  try {
-    if (req.file) req.body.image = `http://${req.get("host")}/${req.file.path}`;
-
-    const newProduct = await Product.create(req.body);
-    res.status(201).json(newProduct);
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.bookDelete = async (req, res, next) => {
   try {
     const foundBook = req.book;
