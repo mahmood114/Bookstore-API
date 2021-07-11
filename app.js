@@ -1,9 +1,15 @@
+// Middleware
 const express = require("express");
 const cors = require("cors");
+
+// Routes
 const bookRoutes = require("./API/book/routes");
 const shopRoutes = require("./API/shop/routes");
+const userRoutes = require("./API/user/routes");
 
+// Database
 const db = require("./db/models/index");
+
 const app = express();
 
 // Middleware
@@ -13,6 +19,7 @@ app.use(express.json());
 // CRUD routes
 app.use("/books", bookRoutes);
 app.use("/shops", shopRoutes);
+app.use(userRoutes);
 app.use("/media", express.static("media"));
 
 // Error Middleware
@@ -30,7 +37,7 @@ app.use((req, res, next) => {
 const run = async () => {
   try {
     await db.sequelize.sync({ alter: true });
-    app.listen(8000);
+    app.listen(8000, () => console.log("App is running on port 8000"));
   } catch (error) {
     console.log(error);
   }

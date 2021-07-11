@@ -2,7 +2,6 @@ const express = require("express");
 const {
   bookFetch,
   bookDelete,
-  bookCreate,
   bookUpdate,
   fetchBook,
 } = require("./controllers");
