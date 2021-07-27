@@ -43,7 +43,8 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-///////////////////
+// ----------------RELATIONSHIPS----------------
+// Shop - Product relationship
 db.Shop.hasMany(db.Product, {
   foreignKey: "shopId",
   allowNull: false,
@@ -53,6 +54,35 @@ db.Product.belongsTo(db.Shop, {
   foreignKey: "shopId",
   as: "shop",
 });
+
+// Shop - User relationship
+db.User.hasOne(db.Shop, {
+  as: "shop",
+  foreignKey: "userId",
+});
+db.Shop.belongsTo(db.User, {
+  as: "user",
+});
+
+// User - Order relationship
+db.User.hasMany(db.Order, {
+  foreignKey: "userId",
+  as: "orders",
+});
+db.Order.belongsTo(db.User, {
+  as: "user",
+});
+
+// Order - Product relationship
+db.Order.belongsToMany(db.Product, {
+  through: db.OrderItem,
+  foreignKey: "orderId",
+});
+db.Product.belongsToMany(db.Order, {
+  through: db.OrderItem,
+  foreignKey: "bookId",
+});
+
 ///////////////////
 
 module.exports = db;

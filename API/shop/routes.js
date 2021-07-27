@@ -6,6 +6,7 @@ const {
   bookCreate,
 } = require("./controllers");
 const multer = require("multer");
+const passport = require("passport");
 
 const router = express.Router();
 
@@ -35,9 +36,19 @@ router.param("shopId", async (req, res, next, shopId) => {
 router.get("/", shopFetch);
 
 // Create shop
-router.post("/", upload.single("image"), shopCreate);
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  shopCreate
+);
 
 // Create book
-router.post("/:shopId/books", upload.single("image"), bookCreate);
+router.post(
+  "/:shopId/books",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  bookCreate
+);
 
 module.exports = router;

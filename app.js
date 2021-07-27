@@ -1,11 +1,14 @@
 // Middleware
 const express = require("express");
 const cors = require("cors");
+const passport = require("passport");
+const { localStrategy, jwtStrategy } = require("./middleware/passport");
 
 // Routes
 const bookRoutes = require("./API/book/routes");
 const shopRoutes = require("./API/shop/routes");
 const userRoutes = require("./API/user/routes");
+const orderRoutes = require("./API/order/routes");
 
 // Database
 const db = require("./db/models/index");
@@ -15,11 +18,15 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 // CRUD routes
 app.use("/books", bookRoutes);
 app.use("/shops", shopRoutes);
 app.use(userRoutes);
+app.use(orderRoutes);
 app.use("/media", express.static("media"));
 
 // Error Middleware
